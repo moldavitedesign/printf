@@ -2,6 +2,7 @@
 
 /**
  * get_flags - Calculates active flags
+ * by Joseph and Ciny
  * @format: Formatted string in which to print the arguments
  * @i: take a parameter.
  * Return: Flags:
