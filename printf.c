@@ -1,117 +1,76 @@
-#include "main.h"
-#include <stdio.h>
-#include <stddef.h>
-#include <string.h>
-#include <stdarg.h>
+#include "holberton.h"
+#include "holberton.h"
 
 /**
- * _printf - function like printf
- * @format: string format to be printed
- *
- * Return: number of characters printed
+ * print_op - function to check which specifier to print
+ * @format: string being passed
+ * @print_arr: array of struct ops
+ * @list: list of arguments to print
+ * Return: numb of char to be printed
  */
-int _printf(const char *format, ...)
+int print_op(const char *format, fmt_t *print_arr, va_list list)
 {
-	int d = 0, num;
-	unsigned int numm, m;
-	va_list ap;
-	char charr;
-	char *ptr;
+	char a;
+	int count = 0, b = 0, c = 0;
 
-	va_start(ap, format);
-	if ((*format == '\0') || (format == NULL))
-		return (d);
-	while (*format != '\0')
+	a = format[b];
+	while (a != '\0')
 	{
-		if (*format == '%')
+		if (a == '%')
 		{
-			if (*(format + 1) == '%')
-			{
-				_putchar('%');
-				d++;
-				format += 2;
-			}
-			else if (*(format + 1) == 's')
-			{
-				ptr = va_arg(ap, char *);
-				while (*ptr != '\0')
-				{
-					_putchar(*ptr);
-					d++;
-					ptr++;
-				}
-				format += 2;
-			}
-			else if (*(format + 1) == 'c')
-			{
-				charr = va_arg(ap, int);
-				_putchar(charr);
-				d++;
-				format += 2;
-			}
-			else if ((*(format + 1) == 'd') || (
-					*(format  + 1) == 'i'))
-			{
-				num = va_arg(ap, int);
-				d += print_number(num);
-				format += 2;
-			}
-			else if (*(format + 1) == 'u')
-			{
-				numm = va_arg(ap, int);
-				d += uprint_number(numm);
-				format += 2;
-			}
-			else if (*(format + 1) == 'p')
-			{
-				m = va_arg(ap, int);
-				ptr = getp(m);
-				while (*ptr != '\0')
-				{
-					_putchar(*ptr);
-					ptr++;
-				}
-				d++;
-				format += 2;
-			}
-			else if (*(format + 1) == 'b')
-			{
-				numm = va_arg(ap, int);
-				numm = cbinary(numm, 0);
-				d += uprint_number(numm);
-				format += 2;
-			}
-			else if (*(format + 1) == 'X')
-			{
-				numm = va_arg(ap, int);
-				d += chex(numm);
-				format += 2;
-			}
-			else if (*(format + 1) == 'x')
-			{
-				numm = va_arg(ap, int);
-				d += low_hex(numm);
-				format += 2;
-			}
-			else if (*(format + 1) == 'o')
-			{
-				numm = va_arg(ap, int);
-				d += coctal(numm);
-				format += 2;
-			}
+			c = 0;
+			b++;
+			a = format[b];
+			while (print_arr[c].type != NULL &&
+			       a != *(print_arr[c].type))
+				c++;
+			if (print_arr[c].type != NULL)
+				count = count + print_arr[c].f(list);
 			else
 			{
-				_putchar(*format);
-				d++;
-				format++;
+				if (a == '\0')
+					return (-1);
+				if (a != '%')
+					count += _putchar('%');
+				count += _putchar(a);
 			}
 		}
 		else
-		{
-			_putchar(*format);
-			d++;
-			format++;
-		}
+			count += _putchar(a);
+		b++;
+		a = format[b];
 	}
-	return (d);
+	return (count);
+}
+
+/**
+ * _printf - prints output according to format
+ * @format: string being passed
+ * Return: char to be printed
+ */
+int _printf(const char *format, ...)
+{
+	va_list list;
+	int a = 0;
+
+	fmt_t ops[] = {
+		{"c", ch},
+		{"s", str},
+		{"d", _int},
+		{"b", _bin},
+		{"i", _int},
+		{"u", _ui},
+		{"o", _oct},
+		{"x", _hex_l},
+		{"X", _hex_u},
+		{"R", _rot13},
+		{NULL, NULL}
+	};
+
+	if (format == NULL)
+		return (-1);
+	va_start(list, format);
+	a = print_op(format, ops, list);
+	va_end(list);
+	return (a);
 }
